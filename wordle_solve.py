@@ -9,6 +9,7 @@ global label2
 global label3
 global label4
 global label5
+global possible_multiples
 
 def get_values():
     global result_val
@@ -21,23 +22,32 @@ def get_values():
     global label3
     global label4
     global label5
+    global possible_multiples
 
     result_val = val1.get() + val2.get() + val3.get() + val4.get() + val5.get()
     if result_val == "GGGGG":
         exit_message = Label(root, text="The word has been found, program will be terminated.").grid(row=5, column=0)
         exit()
     print(result_val)
-
+    banned = []
+    possible_multiples = []
     for i in range(len(result_val)):
-        if result_val[i] == "B":
-            banned = attempt[i]
-            word_list = [word for word in word_list if banned not in word]
-
-        elif result_val[i] == "Y":
+        if result_val[i] == "Y":
             word_list = [word for word in word_list if attempt[i] in word]
+            possible_multiples.append(attempt[i])
 
         elif result_val[i] == "G":
             word_list = [word for word in word_list if word[i] == attempt[i]]
+            possible_multiples.append(attempt[i])
+
+        elif result_val[i] == "B":
+            if attempt[i] not in possible_multiples:
+                banned.append(attempt[i])
+
+
+    for letter in banned:
+        if letter not in possible_multiples:
+            word_list = [word for word in word_list if letter not in list(word)]
 
     attempt = word_list[0]
     t += 1
@@ -51,11 +61,12 @@ def get_values():
 f = open("sgb-words.txt", "r")
 word_list = f.readlines()
 f.close()
-word_list = [word[:5] for word in word_list]
+word_list = [word[:5].upper() for word in word_list]
+possible_multiples = []
 
 root = Tk()
 t = 1
-attempt = "crane"
+attempt = "CRANE"
 iternum = Label(root, text=f"attempt {t}").grid(row=0, column=0)
 label1 = Label(root, text=f"{attempt[0]}").grid(row=0, column=1)
 label2 = Label(root, text=f"{attempt[1]}").grid(row=0, column=2)
